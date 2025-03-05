@@ -8,20 +8,29 @@ import "./auth.css";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [userName, setUserName] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+    e.preventDefault();      
+    if (!username) {
+      toast.error("Please enter your email.");
+      return;
+    }
+    else if (!password){
+      toast.error("Please enter your password.");
+      return;
+    }
+
     const user = {
-      username: userName,
+      email: username,
       password: password,
     };
 
     try {
-      const response = await axios.post("", user);
+      const response = await axios.post("http://localhost:5000/auth/login", user);
       const { token, message } = response.data;
 
       if (token) {
@@ -52,8 +61,8 @@ const SignIn = () => {
           type="email"
           id="email"
           name="email"
-          value={userName}
-          onChange={(e) => setUserName(e.target.value)}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           required
         />
 

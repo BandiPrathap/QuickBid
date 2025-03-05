@@ -1,9 +1,22 @@
 import './pages.css'
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import {useEffect} from "react";
+
+
 
 function WellcomePage(){
+    const token  = localStorage.getItem("token");
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (token) {
+            navigate('/dashboard');
+        }
+    }, [token, navigate]);
+
     return(
-        <>
+        token ? null :
             <div className="wellcome-header">
                 <h4 className='wellcome'>WELLCOME</h4>
                 <h5 className='to'>To</h5>
@@ -18,8 +31,6 @@ function WellcomePage(){
                     </button>
                 </div>
             </div>
-
-        </>
     )
 }
 

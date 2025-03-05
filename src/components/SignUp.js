@@ -24,16 +24,25 @@ const SignUpPage = () => {
     };
 
     try {
-      const response = await axios.post("", user);
+      if(!username) {
+        toast.warning("please enter your Username");
+        return;
+      }
+      else if(!password) {
+        toast.warning("please enter your Passwrod");
+        return;
+      }
+      else if(!email) {
+        toast.warning("please enter your Email");
+        return;
+      }
+      const response = await axios.post("http://localhost:5000/auth/register", user);
       const { message } = response.data;
       toast.success(message);
 
-      setTimeout(() => {
-        if (message!=="The email address already exists"){
-          navigate('/verify-otp',{state:{email}});
-        }
-        
-      }, 2000);
+      if(response.status == 201){
+        navigate('/signin');
+      }
 
 
     } catch (error) {
