@@ -1,122 +1,106 @@
 import React, { useState } from "react";
-import { Link ,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
-
+import "react-toastify/dist/ReactToastify.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./auth.css";
 
 const SignUpPage = () => {
-  const [showPassword, setShowPassword] = useState(false);
-
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    const user = {
-      username: username,
-      email: email,
-      password: password,
-    };
+    if (!username || !email || !password || !confirmPassword) {
+      toast.warning("Please fill in all fields.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast.warning("Passwords do not match.");
+      return;
+    }
+
+    const user = { username, email, password };
 
     try {
-      if(!username) {
-        toast.warning("please enter your Username");
-        return;
-      }
-      else if(!password) {
-        toast.warning("please enter your Passwrod");
-        return;
-      }
-      else if(!email) {
-        toast.warning("please enter your Email");
-        return;
-      }
       const response = await axios.post("http://localhost:5000/auth/register", user);
-      const { message } = response.data;
-      toast.success(message);
-
-      if(response.status == 201){
-        navigate('/signin');
+      if (response.status === 201) {
+        toast.success("Registration Successful!");
+        setTimeout(() => navigate('/signin'), 1500);
       }
-
-
     } catch (error) {
-      toast.warning("The email is already exists");
+      toast.error("The email already exists.");
     }
   };
 
-  const handleShowPasswordChange = () => {
-    setShowPassword(!showPassword);
-  };
-
   return (
-    <div className="container">
-      <h2>Registration</h2>
-      <p className="note text-secondary">
-        Already have an account?
-        <span><Link to='/signin' className="text-danger"> Sign In</Link></span>
-      </p>
-      <form id="registrationForm" onSubmit={handleRegister}>
-        <label htmlFor="username">Username</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
+    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+      <div className="card p-4 shadow-lg rounded-4" style={{ width: "450px" }}>
+        <h2 className="text-center mb-3">Sign Up</h2>
+        <form onSubmit={handleRegister}>
+          <div className="mb-3">
+            <label htmlFor="username" className="form-label">Username</label>
+            <input
+              type="text"
+              className="form-control"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
 
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+          <div className="mb-3">
+            <label htmlFor="email" className="form-label">Email</label>
+            <input
+              type="email"
+              className="form-control"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-        <label htmlFor="password">Password</label>
-        <input
-          type={showPassword ? "text" : "password"}
-          id="password"
-          name="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+          <div className="mb-3">
+            <label htmlFor="password" className="form-label">Password</label>
+            <input
+              type="password"
+              className="form-control"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
 
-        <div className="show-password">
-          <input
-            type="checkbox"
-            id="showPassword"
-            checked={showPassword}
-            onChange={handleShowPasswordChange}
-            className="mt-3"
-          />
-          <label htmlFor="showPassword" className="mt-1">Show Password</label>
-        </div>
+          <div className="mb-3">
+            <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+            <input
+              type="password"
+              className="form-control"
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+          </div>
 
-        <label htmlFor="confirmPassword">Confirm Password</label>
-        <input
-          type={showPassword ? "text" : "password"}
-          id="confirmPassword"
-          name="confirmPassword"
-          required
-        />
+          <button className="btn w-100" type="submit" style={{backgroundColor:"rgb(242, 7, 109)",color:"white"}}>
+            Register
+          </button>
 
-
-        <button className="btn btn-warning text-light" type="submit">
-          Register
-        </button>
-      </form>
-      <ToastContainer/>
+          <p className="mt-3 text-center">
+            Already have an account?
+            <Link to='/signin' className="text-danger ms-1">Sign In</Link>
+          </p>
+        </form>
+      </div>
+      <ToastContainer />
     </div>
   );
 };
